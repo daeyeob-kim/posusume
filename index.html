@@ -1,5 +1,6 @@
 <html>
 <head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta charset="utf-8">
     <title>포켓몬Go 추천 포켓몬 검색기</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -10,10 +11,11 @@
 </head>
 <body>
     <div class="container">
+        <p style="font-weight:800;margin-top:20px;margin-bottom:0">Posusume</p>
         <div class="row">
             <div class="col-md-12">
                 <div class="input-group" style="margin-top: 20px;">
-                    <input id="search_target" type="text" class="form-control" placeholder="Search for..." style="height:40px;">
+                    <input id="search_target" type="text" class="form-control" placeholder="여기에요" style="height:40px;">
                     <span class="input-group-btn">
                         <button id="search_btn" class="btn btn-default" type="button" style="height:40px;">Go!</button>
                     </span>
@@ -21,6 +23,7 @@
             </div>
         </div>
         <div id="result_target">
+            <span style="color:gray">* 이름 일부검색, 초성 일부검색 가능 (혼합불가)</span>
         </div>
     </div>
 
