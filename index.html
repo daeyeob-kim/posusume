@@ -1,0 +1,164 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>포켓몬Go 추천 포켓몬 검색기</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/hangul-js@0.2.6/hangul.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="input-group" style="margin-top: 20px;">
+                    <input id="search_target" type="text" class="form-control" placeholder="Search for..." style="height:40px;">
+                    <span class="input-group-btn">
+                        <button id="search_btn" class="btn btn-default" type="button" style="height:40px;">Go!</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div id="result_target">
+        </div>
+    </div>
+
+    <!-- 폼 예시 -->
+    <div class="row" id="result_form" style="padding:10px; display:none;">
+        <div class="col-md-2 col-sm-6" style="margin-top: 10px;">
+            <p style="font-size:10pt">등급</p>
+            <p class="grade" style="font-size:20pt; font-weight:800;">A</p>
+        </div>
+        <div class="col-md-3 col-sm-6" style="margin-top: 10px;">
+            <p style="font-size:10pt">최종 진화형</p>
+            <p class="final" style="font-size:20pt; font-weight:600;">이경용</p>
+        </div>
+        <div class="col-md-3 col-sm-6" style="margin-top: 10px;">
+            <p style="font-size:10pt">수집대상</p>
+            <p class="target" style="font-size:20pt; font-weight:300;">이경용3</p>
+        </div>
+        <div class="col-md-4 col-sm-6" style="margin-top: 10px;">
+            <p class="type" style="font-size:10pt">불 타입</p>
+            <p class="skills" style="font-size:13pt; font-weight:600;">씨기관총 / 하트플랜트*</p>
+        </div>
+        <hr>
+    </div>
+</body>
+<script>
+
+const finalForm = [
+    { "종이신도" : { "type" : "풀", "grade": "유리대포", "skills": ["잎날가르기", "리프블레이드"] } },
+    { "그림자나무킹" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "하드플랜트*"] } },
+    { "그림자나시" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "솔라빔"] } },
+    { "그림자알로라나시" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "솔라빔"] } },
+    { "그림자우츠보트" : { "type" : "풀", "grade": "유리대포", "skills": ["잎날가르기", "리프블레이드"] } },
+    { "나무킹" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "하드플랜트*"] } },
+    { "버섯모" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "풀묶기"] } },
+    { "메가나무킹" : { "type" : "풀", "grade": "S+", "skills": ["씨기관총", "하드플랜트"] } },
+    { "메가이상해꽃" : { "type" : "풀", "grade": "S+", "skills": ["덩쿨채찍", "하드플랜트"] } },
+    { "자루도(기준)" : { "type" : "풀", "grade": "S+", "skills": ["덩쿨채찍", "파워휩"] } },
+    { "그림자덩쿠림보" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "파워휩"] } },
+    { "그림자토대부기" : { "type" : "풀", "grade": "S", "skills": ["잎날가르기", "하드플랜트*"] } },
+    { "그림자이상해꽃" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "하드플랜트*"] } },
+    { "쉐이미스카이폼" : { "type" : "풀", "grade": "S", "skills": ["잠재파워:풀", "풀묶기"] } },
+    { "고릴타" : { "type" : "풀", "grade": "S", "skills": ["잎날가르기", "풀묶기"] } },
+    { "카푸브루루" : { "type" : "풀", "grade": "S", "skills": ["씨기관총", "풀묶기"] } },
+    { "브리가론" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "파워휩"] } },
+    { "그림자덩쿠림보" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "하드플랜트*"] } },
+    { "달코퀸" : { "type" : "풀", "grade": "S", "skills": ["매지컬리프", "풀묶기"] } },
+    { "달코퀸" : { "type" : "풀1", "grade": "1S", "skills": ["1매지컬리프", "풀1묶기"] } },
+    { "로즈레이드" : { "type" : "풀", "grade": "S", "skills": ["잎날가르기", "풀묶기"] } }
+];
+
+const pokemonList = [
+    {"종이신도": "종이신도"},
+    {"나무돌이": "그림자나무킹"},
+    {"나무지기": "그림자나무킹"},
+    {"아라리": "그림자나시"},
+    {"아라리": "그림자알로라나시"},
+    {"우츠동": "그림자우츠보트"},
+    {"모다피": "그림자우츠보트"},
+    {"나무돌이": "나무킹"},
+    {"나무지기": "나무킹"},
+    {"버섯꼬": "버섯모"},
+    {"나무돌이": "메가나무킹"},
+    {"나무지기": "메가나무킹"},
+    {"이상해풀": "메가이상해꽃"},
+    {"이상해씨": "메가이상해꽃"},
+    {"자루도": "자루도"},
+    {"덩쿠리": "그림자덩쿠림보"},
+    {"수풀부기": "그림자토대부기"},
+    {"모부기": "그림자토대부기"},
+    {"이상해풀": "그림자이상해꽃"},
+    {"이상해씨": "그림자이상해꽃"},
+    {"쉐이미": "쉐이미스카이폼"},
+    {"채키몽": "고릴타"},
+    {"흥나숭": "고릴타"},
+    {"카푸브루루": "카푸브루루"},
+    {"도치보구": "브리가론"},
+    {"도치마론": "브리가론"},
+    {"달무리나": "달코퀸"},
+    {"달콤아": "달코퀸"},
+    {"로젤리아": "로즈레이드"},
+    {"꼬몽울": "로즈레이드"}
+];
+
+$(document).ready(function(){
+    $("#search_btn").click(function(){
+        search();
+    });
+});
+
+function search() {
+    const searchTarget = $("#search_target").val();
+
+    if (searchTarget === "") {
+        alert("검색어를 입력해주세요.");
+        return;
+    }
+    $("#result_target").html("");
+    const result = pokemonList.filter(function(pokemon) {
+        return Object.keys(pokemon).some(function(key) {
+            return (key.indexOf(searchTarget) !== -1 || makeChosung(key).indexOf(searchTarget) !== -1);
+        });
+    });
+
+    if (result.length === 0) {
+        $("#result_target").html("검색 결과가 없습니다.");
+        return;
+    }
+
+    const finalResult = result.map(function(pokemon) {
+        return finalForm.filter(function(finalPokemon) {
+            return Object.keys(finalPokemon).some(function(key) {
+                if (key === pokemon[Object.keys(pokemon)[0]])
+                    finalPokemon[Object.keys(finalPokemon)[0]].target = Object.keys(pokemon);
+                return key === pokemon[Object.keys(pokemon)[0]];
+            });
+        });
+    });
+
+    finalResult.forEach(function(pokemon) {
+        pokemon = pokemon[0];
+        let formTarget = $("#result_form").clone();
+        formTarget.find(".final").html(Object.keys(pokemon)[0]);
+        formTarget.find(".grade").html(pokemon[Object.keys(pokemon)[0]].grade);
+        formTarget.find(".type").html(pokemon[Object.keys(pokemon)[0]].type);
+        formTarget.find(".skills").html(pokemon[Object.keys(pokemon)[0]].skills.join(", "));
+        formTarget.find(".target").html(pokemon[Object.keys(pokemon)[0]].target);
+
+        formTarget.removeAttr("style");
+        $("#result_target").append(formTarget);
+    });
+
+}
+
+function makeChosung(text) {
+    return Hangul.disassemble(text, true).map(function(word) {
+        return word[0];
+    }).join("");
+}
+
+</script>
+</html>
