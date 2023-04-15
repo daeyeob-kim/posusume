@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta charset="utf-8">
+    <meta charSet="utf-8">
     <title>포켓몬Go 추천 포켓몬 검색기</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -10,158 +10,718 @@
     <script src="https://unpkg.com/hangul-js@0.2.6/hangul.js"></script>
 </head>
 <body>
-    <div class="container">
-        <p style="font-weight:800;margin-top:20px;margin-bottom:0">Posusume</p>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="input-group" style="margin-top: 20px;">
-                    <input id="search_target" type="text" class="form-control" placeholder="여기에요" style="height:40px;">
-                    <span class="input-group-btn">
-                        <button id="search_btn" class="btn btn-default" type="button" style="height:40px;">Go!</button>
-                    </span>
-                </div>
+<div class="container">
+    <p style="font-weight:800;margin-top:20px;margin-bottom:0">Posusume <span id="touch_key" style="font-weight:800; font-size:8pt;">by @daeyeobi @jinhugk</span></p>
+
+    <div id="search_input" class="row" style="margin-bottom:10px; display:none;">
+        <div class="col-md-12">
+            <div style="margin-top: 20px;">
+                <input id="search_target" type="text" class="form-control" placeholder="여기에요"
+                       style="height:40px;width:100%">
             </div>
         </div>
-        <div id="result_target">
-            <span style="color:gray">* 이름 일부검색, 초성 일부검색 가능 (혼합불가)</span>
-        </div>
     </div>
+    <div id="result_target">
+        <span style="color:gray">* 이름 일부검색, 초성 일부검색 가능 (혼합불가)</span>
+    </div>
+</div>
 
-    <!-- 폼 예시 -->
-    <div class="row" id="result_form" style="padding:10px; display:none;">
-        <div class="col-md-2 col-sm-6" style="margin-top: 10px;">
-            <p style="font-size:10pt">등급</p>
-            <p class="grade" style="font-size:20pt; font-weight:800;">A</p>
+<!-- 폼 예시 -->
+<div id="result_form" style="padding:20px; display:none;">
+    <div id="left_div" style="text-align:left;flex-grow: 1;">
+        <div style="margin-top: 10px;">
+            <p class="type badge badge-pill" style="font-size:10pt">불 타입</p>
+            <p class="grade badge badge-primary" style="">A</p>
         </div>
-        <div class="col-md-3 col-sm-6" style="margin-top: 10px;">
-            <p style="font-size:10pt">최종 진화형</p>
-            <p class="final" style="font-size:20pt; font-weight:600;">이경용</p>
+        <div>
+            <span class="final" style="font-size:16pt; font-weight:600;">이경용</span>
+            <span class="target" style="font-size:12pt; font-weight:400;">이경용3</span>
+            <!--<p class="skills" style="font-size:10pt; font-weight:400;">씨기관총 / 하트플랜트*</p>-->
         </div>
-        <div class="col-md-3 col-sm-6" style="margin-top: 10px;">
-            <p style="font-size:10pt">수집대상</p>
-            <p class="target" style="font-size:20pt; font-weight:300;">이경용3</p>
-        </div>
-        <div class="col-md-4 col-sm-6" style="margin-top: 10px;">
-            <p class="type" style="font-size:10pt">불 타입</p>
-            <p class="skills" style="font-size:13pt; font-weight:600;">씨기관총 / 하트플랜트*</p>
-        </div>
-        <hr>
     </div>
+    <div id="right_div" style="text-align:right;">
+        <img class="image"
+             src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png"
+             style="width:70px; height:70px;">
+    </div>
+    <hr>
+</div>
 </body>
 <script>
-
-const finalForm = [
-    { "종이신도" : { "type" : "풀", "grade": "유리대포", "skills": ["잎날가르기", "리프블레이드"] } },
-    { "그림자나무킹" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "하드플랜트*"] } },
-    { "그림자나시" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "솔라빔"] } },
-    { "그림자알로라나시" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "솔라빔"] } },
-    { "그림자우츠보트" : { "type" : "풀", "grade": "유리대포", "skills": ["잎날가르기", "리프블레이드"] } },
-    { "나무킹" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "하드플랜트*"] } },
-    { "버섯모" : { "type" : "풀", "grade": "유리대포", "skills": ["씨기관총", "풀묶기"] } },
-    { "메가나무킹" : { "type" : "풀", "grade": "S+", "skills": ["씨기관총", "하드플랜트"] } },
-    { "메가이상해꽃" : { "type" : "풀", "grade": "S+", "skills": ["덩쿨채찍", "하드플랜트"] } },
-    { "자루도(기준)" : { "type" : "풀", "grade": "S+", "skills": ["덩쿨채찍", "파워휩"] } },
-    { "그림자덩쿠림보" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "파워휩"] } },
-    { "그림자토대부기" : { "type" : "풀", "grade": "S", "skills": ["잎날가르기", "하드플랜트*"] } },
-    { "그림자이상해꽃" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "하드플랜트*"] } },
-    { "쉐이미스카이폼" : { "type" : "풀", "grade": "S", "skills": ["잠재파워:풀", "풀묶기"] } },
-    { "고릴타" : { "type" : "풀", "grade": "S", "skills": ["잎날가르기", "풀묶기"] } },
-    { "카푸브루루" : { "type" : "풀", "grade": "S", "skills": ["씨기관총", "풀묶기"] } },
-    { "브리가론" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "파워휩"] } },
-    { "그림자덩쿠림보" : { "type" : "풀", "grade": "S", "skills": ["덩쿨채찍", "하드플랜트*"] } },
-    { "달코퀸" : { "type" : "풀", "grade": "S", "skills": ["매지컬리프", "풀묶기"] } },
-    { "달코퀸" : { "type" : "풀1", "grade": "1S", "skills": ["1매지컬리프", "풀1묶기"] } },
-    { "로즈레이드" : { "type" : "풀", "grade": "S", "skills": ["잎날가르기", "풀묶기"] } }
-];
-
-const pokemonList = [
-    {"종이신도": "종이신도"},
-    {"나무돌이": "그림자나무킹"},
-    {"나무지기": "그림자나무킹"},
-    {"아라리": "그림자나시"},
-    {"아라리": "그림자알로라나시"},
-    {"우츠동": "그림자우츠보트"},
-    {"모다피": "그림자우츠보트"},
-    {"나무돌이": "나무킹"},
-    {"나무지기": "나무킹"},
-    {"버섯꼬": "버섯모"},
-    {"나무돌이": "메가나무킹"},
-    {"나무지기": "메가나무킹"},
-    {"이상해풀": "메가이상해꽃"},
-    {"이상해씨": "메가이상해꽃"},
-    {"자루도": "자루도"},
-    {"덩쿠리": "그림자덩쿠림보"},
-    {"수풀부기": "그림자토대부기"},
-    {"모부기": "그림자토대부기"},
-    {"이상해풀": "그림자이상해꽃"},
-    {"이상해씨": "그림자이상해꽃"},
-    {"쉐이미": "쉐이미스카이폼"},
-    {"채키몽": "고릴타"},
-    {"흥나숭": "고릴타"},
-    {"카푸브루루": "카푸브루루"},
-    {"도치보구": "브리가론"},
-    {"도치마론": "브리가론"},
-    {"달무리나": "달코퀸"},
-    {"달콤아": "달코퀸"},
-    {"로젤리아": "로즈레이드"},
-    {"꼬몽울": "로즈레이드"}
-];
-
-$(document).ready(function(){
-    $("#search_btn").click(function(){
-        search();
-    });
-});
-
-function search() {
-    const searchTarget = $("#search_target").val();
-
-    if (searchTarget === "") {
-        alert("검색어를 입력해주세요.");
-        return;
+    const imageSet = {
+        "종이신도": "",
+        "그림자나무킹": "",
+        "그림자나시": "",
+        "그림자알로라나시": ""
     }
-    $("#result_target").html("");
-    const result = pokemonList.filter(function(pokemon) {
-        return Object.keys(pokemon).some(function(key) {
-            return (key.indexOf(searchTarget) !== -1 || makeChosung(key).indexOf(searchTarget) !== -1);
+
+    const finalForm = [
+        {"종이신도": {"type": "풀", "grade": "유리대포"}},
+        {"그림자나무킹": {"type": "풀", "grade": "유리대포"}},
+        {"그림자나시": {"type": "풀", "grade": "유리대포"}},
+        {"그림자알로라나시": {"type": "풀", "grade": "유리대포"}},
+        {"그림자우츠보트": {"type": "풀", "grade": "유리대포"}},
+        {"나무킹": {"type": "풀", "grade": "유리대포"}},
+        {"버섯모": {"type": "풀", "grade": "유리대포"}},
+        {"메가나무킹": {"type": "풀", "grade": "S+"}},
+        {"메가이상해꽃": {"type": "풀", "grade": "S+"}},
+        {"자루도": {"type": "풀", "grade": "S+"}},
+        {"그림자덩쿠림보": {"type": "풀", "grade": "S"}},
+        {"그림자토대부기": {"type": "풀", "grade": "S"}},
+        {"그림자이상해꽃": {"type": "풀", "grade": "S"}},
+        {"쉐이미스카이폼": {"type": "풀", "grade": "S"}},
+        {"고릴타": {"type": "풀", "grade": "S"}},
+        {"카푸브루루": {"type": "풀", "grade": "S"}},
+        {"브리가론": {"type": "풀", "grade": "S"}},
+        {"달코퀸": {"type": "풀", "grade": "S"}},
+        {"로즈레이드": {"type": "풀", "grade": "S"}},
+        {"덩쿠림보": {"type": "풀", "grade": "A~A+"}},
+        {"그림자메가니움": {"type": "풀", "grade": "A~A+"}},
+        {"세레비": {"type": "풀", "grade": "A~A+"}},
+        {"이상해꽃": {"type": "풀", "grade": "A~A+"}},
+        {"토대부기": {"type": "풀", "grade": "A~A+"}},
+        {"쉐이미랜드폼": {"type": "풀", "grade": "A~A+"}},
+        {"메가눈설왕": {"type": "풀", "grade": "A~A+"}},
+        {"고고트": {"type": "풀", "grade": "A~A+"}},
+        {"브리가론": {"type": "풀", "grade": "A~A+"}},
+        {"리피아": {"type": "풀", "grade": "A~A+"}},
+        {"나시": {"type": "풀", "grade": "A~A+"}},
+        {"알로라나시": {"type": "풀", "grade": "A~A+"}},
+        {"그림자번치코": {"type": "불", "grade": "유리대포"}},
+        {"그림자블레이범": {"type": "불", "grade": "유리대포"}},
+        {"불비달마": {"type": "불", "grade": "유리대포"}},
+        {"샹델라": {"type": "불", "grade": "유리대포"}},
+        {"번치코": {"type": "불", "grade": "유리대포"}},
+        {"염무왕": {"type": "불", "grade": "유리대포"}},
+        {"메가리자몽Y": {"type": "불", "grade": "S+"}},
+        {"메가번치코": {"type": "불", "grade": "S+"}},
+        {"레시라무": {"type": "불", "grade": "S+"}},
+        {"메가리자몽X": {"type": "불", "grade": "S+"}},
+        {"그림자앤테이": {"type": "불", "grade": "S+"}},
+        {"그림자칠색APEX": {"type": "불", "grade": "S+"}},
+        {"그림자파이어": {"type": "불", "grade": "S+"}},
+        {"그림자칠색조": {"type": "불", "grade": "S+"}},
+        {"메가헬가": {"type": "불", "grade": "S+"}},
+        {"정화칠색APEX": {"type": "불", "grade": "S"}},
+        {"메가보만다": {"type": "불", "grade": "S"}},
+        {"불카모스": {"type": "불", "grade": "S"}},
+        {"앤테이": {"type": "불", "grade": "S"}},
+        {"파이어": {"type": "불", "grade": "S"}},
+        {"히드런": {"type": "불", "grade": "S"}},
+        {"볼케니온": {"type": "불", "grade": "S"}},
+        {"원시그란돈": {"type": "불", "grade": "A~A+"}},
+        {"칠색조": {"type": "불", "grade": "A~A+"}},
+        {"리자몽": {"type": "불", "grade": "A~A+"}},
+        {"메가폭타": {"type": "불", "grade": "A~A+"}},
+        {"블레이범": {"type": "불", "grade": "A~A+"}},
+        {"초염몽": {"type": "불", "grade": "A~A+"}},
+        {"부스터": {"type": "불", "grade": "A~A+"}},
+        {"그림자대짱이": {"type": "물", "grade": "유리대포"}},
+        {"그림자장크로다일": {"type": "물", "grade": "유리대포"}},
+        {"그림자갸라도스": {"type": "물", "grade": "유리대포"}},
+        {"킹크랩": {"type": "물", "grade": "유리대포"}},
+        {"메가샤크니아": {"type": "물", "grade": "유리대포"}},
+        {"그림자거북왕": {"type": "물", "grade": "유리대포"}},
+        {"블로스터": {"type": "물", "grade": "유리대포"}},
+        {"인텔리레온": {"type": "물", "grade": "유리대포"}},
+        {"가재장군": {"type": "물", "grade": "유리대포"}},
+        {"원시가이오가": {"type": "물", "grade": "S+"}},
+        {"메가대짱이": {"type": "물", "grade": "S+"}},
+        {"메가거북왕": {"type": "물", "grade": "S+"}},
+        {"메가갸라도스": {"type": "물", "grade": "S+"}},
+        {"가이오가": {"type": "물", "grade": "S+"}},
+        {"대짱이": {"type": "물", "grade": "S"}},
+        {"장크로다일": {"type": "물", "grade": "S"}},
+        {"대검귀": {"type": "물", "grade": "S"}},
+        {"볼케니온": {"type": "물", "grade": "S"}},
+        {"엠페르트": {"type": "물", "grade": "S"}},
+        {"메가야도란": {"type": "물", "grade": "S"}},
+        {"갸라도스": {"type": "물", "grade": "A~A+"}},
+        {"마나피": {"type": "물", "grade": "A~A+"}},
+        {"누리레느": {"type": "물", "grade": "A~A+"}},
+        {"전수목": {"type": "전기", "grade": "유리대포"}},
+        {"그림자에레키블": {"type": "전기", "grade": "유리대포"}},
+        {"그림자렌트라": {"type": "전기", "grade": "유리대포"}},
+        {"볼트로스영물폼": {"type": "전기", "grade": "유리대포"}},
+        {"에레키블": {"type": "전기", "grade": "유리대포"}},
+        {"그림자라이코": {"type": "전기", "grade": "S+"}},
+        {"메가썬더볼트": {"type": "전기", "grade": "S+"}},
+        {"그림자썬더": {"type": "전기", "grade": "S+"}},
+        {"제크로무": {"type": "전기", "grade": "S+"}},
+        {"그림자자포코일": {"type": "전기", "grade": "S+"}},
+        {"메가전룡": {"type": "전기", "grade": "S+"}},
+        {"라이코": {"type": "전기", "grade": "S"}},
+        {"그림자뮤츠": {"type": "전기", "grade": "S"}},
+        {"썬더": {"type": "전기", "grade": "S"}},
+        {"자포코일": {"type": "전기", "grade": "A~A+"}},
+        {"렌트라": {"type": "전기", "grade": "A~A+"}},
+        {"카푸꼬꼬꼭": {"type": "전기", "grade": "A~A+"}},
+        {"투구뿌논": {"type": "전기", "grade": "A~A+"}},
+        {"그림자포푸니라": {"type": "얼음", "grade": "유리대포"}},
+        {"그림자맘모꾸리": {"type": "얼음", "grade": "S+"}},
+        {"가라르불비달마": {"type": "얼음", "grade": "S+"}},
+        {"그림자뮤츠": {"type": "얼음", "grade": "S+"}},
+        {"메가얼음귀신": {"type": "얼음", "grade": "S+"}},
+        {"맘모꾸리": {"type": "얼음", "grade": "S+"}},
+        {"메가눈설왕": {"type": "얼음", "grade": "S+"}},
+        {"큐레무": {"type": "얼음", "grade": "S"}},
+        {"글레이시아": {"type": "얼음", "grade": "S"}},
+        {"뮤츠": {"type": "얼음", "grade": "S"}},
+        {"포푸니라": {"type": "얼음", "grade": "S"}},
+        {"원시가이오가": {"type": "얼음", "grade": "A~A+"}},
+        {"그림자프리져": {"type": "얼음", "grade": "A~A+"}},
+        {"그림자레지아이스": {"type": "얼음", "grade": "A~A+"}},
+        {"크레베이스": {"type": "얼음", "grade": "A~A+"}},
+        {"그림자눈설왕": {"type": "얼음", "grade": "A~A+"}},
+        {"그림자씨카이저": {"type": "얼음", "grade": "A~A+"}},
+        {"페로코체": {"type": "벌레", "grade": "유리대포"}},
+        {"어지리더": {"type": "벌레", "grade": "S+"}},
+        {"메가헤라크로스": {"type": "벌레", "grade": "S+"}},
+        {"메가쁘사이저": {"type": "벌레", "grade": "S+"}},
+        {"메가핫삼": {"type": "벌레", "grade": "S+"}},
+        {"불카모스": {"type": "벌레", "grade": "S+"}},
+        {"메가독침붕": {"type": "벌레", "grade": "S+"}},
+        {"게노세크트": {"type": "벌레", "grade": "S"}},
+        {"투구뿌논": {"type": "벌레", "grade": "S"}},
+        {"메가자리": {"type": "벌레", "grade": "S"}},
+        {"다태우지네": {"type": "벌레", "grade": "S"}},
+        {"모스노우": {"type": "벌레", "grade": "S"}},
+        {"슈바르고": {"type": "벌레", "grade": "S"}},
+        {"쁘사이저": {"type": "벌레", "grade": "S"}},
+        {"핫삼": {"type": "벌레", "grade": "S"}},
+        {"갑주무사": {"type": "벌레", "grade": "A~A+"}},
+        {"헤라크로스": {"type": "벌레", "grade": "A~A+"}},
+        {"아이앤트": {"type": "벌레", "grade": "A~A+"}},
+        {"모아머": {"type": "벌레", "grade": "A~A+"}},
+        {"펜드라": {"type": "벌레", "grade": "A~A+"}},
+        {"그림자우츠보트": {"type": "독", "grade": "유리대포"}},
+        {"메가독침붕": {"type": "독", "grade": "S+"}},
+        {"텅비드": {"type": "독", "grade": "S+"}},
+        {"로즈레이드": {"type": "독", "grade": "S"}},
+        {"장침바루": {"type": "독", "grade": "S"}},
+        {"그림자알로라질뻐기": {"type": "독", "grade": "S"}},
+        {"독개굴": {"type": "독", "grade": "A~A+"}},
+        {"그림자드래피온": {"type": "독", "grade": "A~A+"}},
+        {"우츠보트": {"type": "독", "grade": "A~A+"}},
+        {"그림자돈크로우": {"type": "비행", "grade": "유리대포"}},
+        {"돈크로우": {"type": "비행", "grade": "유리대포"}},
+        {"메가레쿠쟈": {"type": "비행", "grade": "S+"}},
+        {"그림자파이어": {"type": "비행", "grade": "S+"}},
+        {"메가피죤투": {"type": "비행", "grade": "S+"}},
+        {"파이어": {"type": "비행", "grade": "S+"}},
+        {"그림자루기아APEX": {"type": "비행", "grade": "S"}},
+        {"레쿠쟈": {"type": "비행", "grade": "S"}},
+        {"이벨타르": {"type": "비행", "grade": "S"}},
+        {"찌르호크": {"type": "비행", "grade": "A~A+"}},
+        {"워글": {"type": "비행", "grade": "A~A+"}},
+        {"가라르파이어": {"type": "비행", "grade": "A~A+"}},
+        {"켄호로우": {"type": "비행", "grade": "A~A+"}},
+        {"토네로스화신폼": {"type": "비행", "grade": "A~A+"}},
+        {"토네로스영물폼": {"type": "비행", "grade": "A~A+"}},
+        {"히스이워글": {"type": "비행", "grade": "A~A+"}},
+        {"그림자맘모꾸리": {"type": "땅", "grade": "유리대포"}},
+        {"그림자골루그": {"type": "땅", "grade": "유리대포"}},
+        {"그림자플라이곤": {"type": "땅", "grade": "유리대포"}},
+        {"원시그란돈": {"type": "땅", "grade": "S+"}},
+        {"메가한카리아스": {"type": "땅", "grade": "S+"}},
+        {"그란돈": {"type": "땅", "grade": "S+"}},
+        {"메가대짱이": {"type": "땅", "grade": "S+"}},
+        {"한카리아스": {"type": "땅", "grade": "S"}},
+        {"랜드로스영물폼": {"type": "땅", "grade": "S"}},
+        {"맘모꾸리": {"type": "땅", "grade": "S"}},
+        {"거대코뿌리": {"type": "땅", "grade": "A~A+"}},
+        {"랜드로스화신폼": {"type": "땅", "grade": "A~A+"}},
+        {"몰드류": {"type": "땅", "grade": "A~A+"}},
+        {"그림자코리갑": {"type": "땅", "grade": "A~A+"}},
+        {"그림자딱구리": {"type": "땅", "grade": "A~A+"}},
+        {"그림자대짱이": {"type": "땅", "grade": "A~A+"}},
+        {"램펄드": {"type": "바위", "grade": "유리대포"}},
+        {"메가디안시": {"type": "바위", "grade": "S+"}},
+        {"메가마기라스": {"type": "바위", "grade": "S+"}},
+        {"메가프테라": {"type": "바위", "grade": "S+"}},
+        {"그림자마기라스": {"type": "바위", "grade": "S+"}},
+        {"거대코뿌리": {"type": "바위", "grade": "S+"}},
+        {"테라키온": {"type": "바위", "grade": "S"}},
+        {"견고라스": {"type": "바위", "grade": "S"}},
+        {"기가이어스": {"type": "바위", "grade": "S"}},
+        {"메가보스로라": {"type": "바위", "grade": "A~A+"}},
+        {"마기라스": {"type": "바위", "grade": "A~A+"}},
+        {"돌헨진": {"type": "바위", "grade": "A~A+"}},
+        {"아마루르가": {"type": "바위", "grade": "A~A+"}},
+        {"그림자핫삼": {"type": "강철", "grade": "유리대포"}},
+        {"메가메타그로스": {"type": "강철", "grade": "S+"}},
+        {"그림자메타그로스": {"type": "강철", "grade": "S+"}},
+        {"자시안검왕": {"type": "강철", "grade": "S+"}},
+        {"메타그로스": {"type": "강철", "grade": "S+"}},
+        {"메가보스로라": {"type": "강철", "grade": "S"}},
+        {"디아루가": {"type": "강철", "grade": "S"}},
+        {"메가핫삼": {"type": "강철", "grade": "S"}},
+        {"멜메탈": {"type": "강철", "grade": "A~A+"}},
+        {"자마젠타방패왕": {"type": "강철", "grade": "A~A+"}},
+        {"메가루카리오": {"type": "강철", "grade": "A~A+"}},
+        {"게노세크트": {"type": "강철", "grade": "A~A+"}},
+        {"몰드류": {"type": "강철", "grade": "A~A+"}}
+    ];
+
+    const pokemonList = [
+            {"종이신도": "종이신도"},
+            {"나무돌이": "그림자나무킹"},
+            {"아라리": "그림자나시"},
+            {"아라리": "그림자알로라나시"},
+            {"우츠동": "그림자우츠보트"},
+            {"나무돌이": "나무킹"},
+            {"버섯꼬": "버섯모"},
+            {"나무돌이": "메가나무킹"},
+            {"이상해풀": "메가이상해꽃"},
+            {"자루도": "자루도"},
+            {"덩쿠리": "그림자덩쿠림보"},
+            {"수풀부기": "그림자토대부기"},
+            {"이상해풀": "그림자이상해꽃"},
+            {"쉐이미스카이폼": "쉐이미스카이폼"},
+            {"채키몽": "고릴타"},
+            {"카푸브루루": "카푸브루루"},
+            {"도치보구": "브리가론"},
+            {"달무리나": "달코퀸"},
+            {"로젤리아": "로즈레이드"},
+            {"덩쿠리": "덩쿠림보"},
+            {"베이리프": "그림자메가니움"},
+            {"세레비": "세레비"},
+            {"이상해풀": "이상해꽃"},
+            {"수풀부기": "토대부기"},
+            {"쉐이미랜드폼": "쉐이미랜드폼"},
+            {"눈쓰개": "메가눈설왕"},
+            {"메이클": "고고트"},
+            {"도치마론": "브리가론"},
+            {"이브이": "리피아"},
+            {"아라리": "나시"},
+            {"아라리": "알로라나시"},
+            {"영치코": "그림자번치코"},
+            {"마그케인": "그림자블레이범"},
+            {"달막화": "불비달마"},
+            {"램프라": "샹델라"},
+            {"영치코": "번치코"},
+            {"차오꿀": "염무왕"},
+            {"리자드": "메가리자몽Y"},
+            {"영치코": "메가번치코"},
+            {"레시라무": "레시라무"},
+            {"리자드": "메가리자몽X"},
+            {"그림자앤테이": "그림자앤테이"},
+            {"그림자칠색조APEX": "그림자칠색조APEX"},
+            {"그림자파이어": "그림자파이어"},
+            {"그림자칠색조": "그림자칠색조"},
+            {"델빌": "메가헬가"},
+            {"정화칠색조APEX": "정화칠색조APEX"},
+            {"쉘곤": "메가보만다"},
+            {"활화르바": "불카모스"},
+            {"앤테이": "앤테이"},
+            {"파이어": "파이어"},
+            {"히드런": "히드런"},
+            {"볼케니온": "볼케니온"},
+            {"원시그란돈": "원시그란돈"},
+            {"칠색조": "칠색조"},
+            {"리자몽": "리자몽"},
+            {"둔타": "메가폭타"},
+            {"마그케인": "블레이범"},
+            {"파이숭이": "초염몽"},
+            {"이브이": "부스터"},
+            {"늪짱이": "그림자대짱이"},
+            {"엘리게이": "그림자장크로다일"},
+            {"잉어킹": "그림자갸라도스"},
+            {"크랩": "킹크랩"},
+            {"샤프니아": "메가샤크니아"},
+            {"어니부기": "그림자거북왕"},
+            {"완철포": "블로스터"},
+            {"누겔레온": "인텔리레온"},
+            {"가재군": "가재장군"},
+            {"가이오가": "원시가이오가"},
+            {"늪짱이": "메가대짱이"},
+            {"어니부기": "메가거북왕"},
+            {"잉어킹": "메가갸라도스"},
+            {"가이오가": "가이오가"},
+            {"늪짱이": "대짱이"},
+            {"엘리게이": "장크로다일"},
+            {"쌍검자비": "대검귀"},
+            {"팽도리": "엠페르트"},
+            {"야돈": "메가야도란"},
+            {"잉어킹": "갸라도스"},
+            {"마나피": "마나피"},
+            {"키요공": "누리레느"},
+            {"전수목": "전수목"},
+            {"에레브": "그림자에레키블"},
+            {"럭시오": "그림자렌트라"},
+            {"볼트로스영물폼": "볼트로스영물폼"},
+            {"에레브": "에레키블"},
+            {"그림자라이코": "그림자라이코"},
+            {"썬더라이": "메가썬더볼트"},
+            {"그림자썬더": "그림자썬더"},
+            {"제크로무": "제크로무"},
+            {"레어코일": "그림자자포코일"},
+            {"보송송": "메가전룡"},
+            {"라이코": "라이코"},
+            {"그림자뮤츠": "그림자뮤츠"},
+            {"썬더": "썬더"},
+            {"레어코일": "자포코일"},
+            {"럭시오": "렌트라"},
+            {"카푸꼬꼬꼭": "카푸꼬꼬꼭"},
+            {"전지충이": "투구뿌논"},
+            {"포푸니": "그림자포푸니라"},
+            {"메꾸리": "그림자맘모꾸리"},
+            {"달막화": "가라르불비달마"},
+            {"눈꼬마": "메가얼음귀신"},
+            {"메꾸리": "맘모꾸리"},
+            {"큐레무": "큐레무"},
+            {"이브이": "글레이시아"},
+            {"뮤츠": "뮤츠"},
+            {"포푸니": "포푸니라"},
+            {"원시가이오가": "원시가이오가"},
+            {"그림자프리져": "그림자프리져"},
+            {"그림자레지아이스": "그림자레지아이스"},
+            {"꽁어름": "크레베이스"},
+            {"눈쓰개": "그림자눈설왕"},
+            {"씨레오": "그림자씨카이저"},
+            {"페로코체": "페로코체"},
+            {"쪼마리": "어지리더"},
+            {"메가헤라크로스": "메가헤라크로스"},
+            {"메가쁘사이저": "메가쁘사이저"},
+            {"스라크": "메가핫삼"},
+            {"딱충이": "메가독침붕"},
+            {"게노세크트": "게노세크트"},
+            {"왕자리": "메가자리"},
+            {"태우지네": "다태우지네"},
+            {"누니머기": "모스노우"},
+            {"딱정곤": "슈바르고"},
+            {"쁘사이저": "쁘사이저"},
+            {"스라크": "핫삼"},
+            {"꼬시레": "갑주무사"},
+            {"헤라크로스": "헤라크로스"},
+            {"아이앤트": "아이앤트"},
+            {"두르쿤": "모아머"},
+            {"휠구": "펜드라"},
+            {"니로우": "그림자돈크로우"},
+            {"니로우": "돈크로우"},
+            {"메가레쿠쟈": "메가레쿠쟈"},
+            {"피죤": "메가피죤투"},
+            {"그림자루기아APEX": "그림자루기아APEX"},
+            {"레쿠쟈": "레쿠쟈"},
+            {"이벨타르": "이벨타르"},
+            {"찌르버드": "찌르호크"},
+            {"수리둥보": "워글"},
+            {"가라르파이어": "가라르파이어"},
+            {"유토브": "켄호로우"},
+            {"토네로스화신폼": "토네로스화신폼"},
+            {"토네로스영물폼": "토네로스영물폼"},
+            {"수리둥보": "히스이워글"},
+            {"골비람": "그림자골루그"},
+            {"비브라바": "그림자플라이곤"},
+            {"한바이트": "메가한카리아스"},
+            {"그란돈": "그란돈"},
+            {"한바이트": "한카리아스"},
+            {"랜드로스영물폼": "랜드로스영물폼"},
+            {"코뿌리": "거대코뿌리"},
+            {"랜드로스화신폼": "랜드로스화신폼"},
+            {"두더류": "몰드류"},
+            {"코코리": "그림자코리갑"},
+            {"데구리": "그림자딱구리"},
+            {"두개노스": "램펄드"},
+            {"메가디안시": "메가디안시"},
+            {"데기라스": "메가마기라스"},
+            {"메가프테라": "메가프테라"},
+            {"데기라스": "그림자마기라스"},
+            {"테라키온": "테라키온"},
+            {"티고라스": "견고라스"},
+            {"암트르": "기가이어스"},
+            {"갱도라": "메가보스로라"},
+            {"데기라스": "마기라스"},
+            {"돌헨진": "돌헨진"},
+            {"아마루스": "아마루르가"},
+            {"스라크": "그림자핫삼"},
+            {"메탕구": "메가메타그로스"},
+            {"메탕구": "그림자메타그로스"},
+            {"자시안검왕": "자시안검왕"},
+            {"메탕구": "메타그로스"},
+            {"디아루가": "디아루가"},
+            {"멜탄": "멜메탈"},
+            {"자마젠타방패왕": "자마젠타방패왕"},
+            {"리오르": "메가루카리오"},
+            {"케르디오": "케르디오"},
+            {"근육몬": "그림자괴력몬"},
+            {"윤겔라": "메가후딘"},
+            {"마크탕": "그림자하리뭉"},
+            {"리오르": "루카리오"},
+            {"메가엘레이드": "메가엘레이드"},
+            {"치고마": "우라오스"},
+            {"이어롤": "메가이어롭"},
+            {"토쇠골": "노보청"},
+            {"근육몬": "괴력몬"},
+            {"블루": "그림자그랑블루"},
+            {"킬리아": "메가가디안"},
+            {"킬리아": "그림자가디안"},
+            {"토게틱": "토게키스"},
+            {"킬리아": "가디안"},
+            {"손지브림": "브리무음"},
+            {"이브이": "님피아"},
+            {"블루": "그랑블루"},
+            {"마빌크": "마휘핑"},
+            {"블랙큐레무": "블랙큐레무"},
+            {"쉘곤": "그림자보만다"},
+            {"메가라티오스": "메가라티오스"},
+            {"신뇽": "그림자망나뇽"},
+            {"메가라티아스": "메가라티아스"},
+            {"그림자라티오스": "그림자라티오스"},
+            {"화이트큐레무": "화이트큐레무"},
+            {"펄기아": "펄기아"},
+            {"보만다": "보만다"},
+            {"신뇽": "망나뇽"},
+            {"그림자라티아스": "그림자라티아스"},
+            {"드래런치": "드래펄트"},
+            {"액슨도": "액스라이즈"},
+            {"메가리자몽X": "메가리자몽X"},
+            {"라티오스": "라티오스"},
+            {"고우스트": "팬텀"},
+            {"어둠대신": "그림자다크펫"},
+            {"코산호": "산호르곤"},
+            {"데인차": "포트데스"},
+            {"타타륜": "타타륜"},
+            {"무우마": "그림자무우마직"},
+            {"흔들풍손": "그림자둥실라이드"},
+            {"어둠대신": "다크펫"},
+            {"고우스트": "메가팬텀"},
+            {"어둠대신": "메가다크펫"},
+            {"기라티나오리진폼": "기라티나오리진폼"},
+            {"모으령": "타부자고"},
+            {"다크라이": "다크라이"},
+            {"굴레에빠진후파": "굴레에빠진후파"},
+            {"굴레를벗어난후파": "굴레를벗어난후파"},
+            {"기라티나어나더폼": "기라티나어나더폼"},
+            {"코스모움": "루나아라"},
+            {"나목령": "대로트"},
+            {"무우마": "무우마직"},
+            {"메가뮤츠Y": "메가뮤츠Y"},
+            {"메가뮤츠X": "메가뮤츠X"},
+            {"버드렉스흑마": "버드렉스흑마"},
+            {"버드렉스백마": "버드렉스백마"},
+            {"킬리아": "그림자엘레이드"},
+            {"이브이": "에브이"},
+            {"나무지기": "그림자나무킹"},
+            {"모다피": "그림자우츠보트"},
+            {"나무지기": "나무킹"},
+            {"나무지기": "메가나무킹"},
+            {"이상해씨": "메가이상해꽃"},
+            {"모부기": "그림자토대부기"},
+            {"이상해씨": "그림자이상해꽃"},
+            {"흥나숭": "고릴타"},
+            {"달콤아": "달코퀸"},
+            {"꼬몽울": "로즈레이드"},
+            {"치코리타": "그림자메가니움"},
+            {"이상해씨": "이상해꽃"},
+            {"모부기": "토대부기"},
+            {"아차모": "그림자번치코"},
+            {"브케인": "그림자블레이범"},
+            {"불켜미": "샹델라"},
+            {"아차모": "번치코"},
+            {"뚜꾸리": "염무왕"},
+            {"파이리": "메가리자몽Y"},
+            {"아차모": "메가번치코"},
+            {"파이리": "메가리자몽X"},
+            {"아공이": "메가보만다"},
+            {"브케인": "블레이범"},
+            {"불꽃숭이": "초염몽"},
+            {"물짱이": "그림자대짱이"},
+            {"리아코": "그림자장크로다일"},
+            {"꼬부기": "그림자거북왕"},
+            {"울머기": "인텔리레온"},
+            {"물짱이": "메가대짱이"},
+            {"꼬부기": "메가거북왕"},
+            {"물짱이": "대짱이"},
+            {"리아코": "장크로다일"},
+            {"수댕이": "대검귀"},
+            {"팽태자": "엠페르트"},
+            {"누리공": "누리레느"},
+            {"에레키드": "그림자에레키블"},
+            {"꼬링크": "그림자렌트라"},
+            {"에레키드": "에레키블"},
+            {"코일": "그림자자포코일"},
+            {"메리프": "메가전룡"},
+            {"코일": "자포코일"},
+            {"꼬링크": "렌트라"},
+            {"턱지충이": "투구뿌논"},
+            {"꾸꾸리": "그림자맘모꾸리"},
+            {"꾸꾸리": "맘모꾸리"},
+            {"대굴레오": "그림자씨카이저"},
+            {"뿔충이": "메가독침붕"},
+            {"두르보": "모아머"},
+            {"마디네": "펜드라"},
+            {"구구": "메가피죤투"},
+            {"찌르꼬": "찌르호크"},
+            {"콩둘기": "켄호로우"},
+            {"톱치": "그림자플라이곤"},
+            {"딥상어동": "메가한카리아스"},
+            {"딥상어동": "한카리아스"},
+            {"뿔카노": "거대코뿌리"},
+            {"꼬마돌": "그림자딱구리"},
+            {"애버라스": "메가마기라스"},
+            {"애버라스": "그림자마기라스"},
+            {"단굴": "기가이어스"},
+            {"가보리": "메가보스로라"},
+            {"애버라스": "마기라스"},
+            {"메탕": "메가메타그로스"},
+            {"메탕": "그림자메타그로스"},
+            {"메탕": "메타그로스"},
+            {"알통몬": "그림자괴력몬"},
+            {"캐이시": "메가후딘"},
+            {"으랏차": "노보청"},
+            {"알통몬": "괴력몬"},
+            {"랄토스": "메가가디안"},
+            {"랄토스": "그림자가디안"},
+            {"토게피": "토게키스"},
+            {"랄토스": "가디안"},
+            {"몸지브림": "브리무음"},
+            {"아공이": "그림자보만다"},
+            {"미뇽": "그림자망나뇽"},
+            {"미뇽": "망나뇽"},
+            {"드라꼰": "드래펄트"},
+            {"터검니": "액스라이즈"},
+            {"고오스": "팬텀"},
+            {"고오스": "메가팬텀"},
+            {"어둠대신": "루나아라"},
+            {"코스모그": "루나아라"},
+            {"랄토스": "그림자엘레이드"}
+        ]
+    ;
+
+    $(document).ready(function () {
+        // by @daeyeobi @jinhugk를 5번 연속해서 클릭하면 search_input이 보이게 하고, search_target에 포커스를 준다.
+        let touchCount = 0;
+        $("#touch_key").click(function () {
+            touchCount++;
+            if (touchCount === 5) {
+                $("#search_input").show();
+                $("#search_target").focus();
+                touchCount = 0;
+            }
+        });
+
+        $("#search_target").keyup(function () {
+            search();
         });
     });
 
-    if (result.length === 0) {
-        $("#result_target").html("검색 결과가 없습니다.");
-        return;
-    }
+    function search() {
+        const searchTarget = $("#search_target").val();
 
-    const finalResult = result.map(function(pokemon) {
-        return finalForm.filter(function(finalPokemon) {
-            return Object.keys(finalPokemon).some(function(key) {
-                if (key === pokemon[Object.keys(pokemon)[0]])
-                    finalPokemon[Object.keys(finalPokemon)[0]].target = Object.keys(pokemon);
-                return key === pokemon[Object.keys(pokemon)[0]];
+        if (searchTarget === "") {
+            return;
+        }
+        $("#result_target").html("");
+        const result = pokemonList.filter(function (pokemon) {
+            return Object.keys(pokemon).some(function (key) {
+                return (key.indexOf(searchTarget) !== -1 || makeChosung(key).indexOf(searchTarget) !== -1);
             });
         });
-    });
 
-    finalResult.forEach(function(pokemon) {
-        pokemon = pokemon[0];
-        let formTarget = $("#result_form").clone();
-        formTarget.find(".final").html(Object.keys(pokemon)[0]);
-        formTarget.find(".grade").html(pokemon[Object.keys(pokemon)[0]].grade);
-        formTarget.find(".type").html(pokemon[Object.keys(pokemon)[0]].type);
-        formTarget.find(".skills").html(pokemon[Object.keys(pokemon)[0]].skills.join(", "));
-        formTarget.find(".target").html(pokemon[Object.keys(pokemon)[0]].target);
+        if (result.length === 0) {
+            $("#result_target").html("검색 결과가 없습니다.");
+            return;
+        }
 
-        formTarget.removeAttr("style");
-        $("#result_target").append(formTarget);
-    });
+        const finalResult = result.map(function (pokemon) {
+            return finalForm.filter(function (finalPokemon) {
+                return Object.keys(finalPokemon).some(function (key) {
+                    if (key === pokemon[Object.keys(pokemon)[0]])
+                        finalPokemon[Object.keys(finalPokemon)[0]].target = Object.keys(pokemon);
+                    return key === pokemon[Object.keys(pokemon)[0]];
+                });
+            });
+        });
 
-}
+        finalResult.forEach(function (pokemons) {
+            if (pokemons === undefined) return;
+            pokemons.forEach(function (pokemon) {
+                let formTarget = $("#result_form").clone();
+                formTarget.find(".final").html(Object.keys(pokemon)[0]);
+                formTarget.find(".grade").html(pokemon[Object.keys(pokemon)[0]].grade);
+                formTarget.find(".grade")[0].style.cssText += gradeClassText(pokemon[Object.keys(pokemon)[0]].grade)
+                formTarget.find(".type").html(pokemon[Object.keys(pokemon)[0]].type);
+                formTarget.find(".type")[0].style.cssText += typeClassText(pokemon[Object.keys(pokemon)[0]].type)
+                //formTarget.find(".skills").html(pokemon[Object.keys(pokemon)[0]].skills.join(", "));
+                formTarget.find(".target").html(pokemon[Object.keys(pokemon)[0]].target);
 
-function makeChosung(text) {
-    return Hangul.disassemble(text, true).map(function(word) {
-        return word[0];
-    }).join("");
-}
+                formTarget.removeAttr("style");
+                formTarget.attr("style", "display: flex;");
+                $("#result_target").append(formTarget);
+            });
+        });
+
+    }
+
+
+    function gradeClassText(gradeText) {
+        switch (gradeText) {
+            case "유리대포":
+                return "background-color: #47302E;";
+            case "S+":
+                return "background-color: #EBBC6B;";
+            case "S":
+                return "background-color: #ED9149;";
+            case "A+":
+                return "background-color: #0B6DB7;";
+            case "A":
+                return "background-color: #4F599F;";
+            case "A~A+":
+                return "background-color: #31B675;";
+            default:
+                return "";
+        }
+    }
+
+    function typeClassText(typeText) {
+        switch (typeText) {
+            case "풀":
+                return "background-color: #009770;";
+            case "불":
+                return "background-color: #B82647;";
+            case "물":
+                return "background-color: #00B5E3;";
+            case "전기":
+                return "background-color: #F9D537;";
+            case "얼음":
+                return "background-color: #0B6DB7;";
+            case "벌레":
+                return "background-color: #417141;";
+            case "독":
+                return "background-color: #6A5BA8;";
+            case "비행":
+                return "background-color: #00B5E3;";
+            case "땅":
+                return "background-color: #966147;";
+            case "바위":
+                return "background-color: #1D1E23;";
+            case "강철":
+                return "background-color: #959EA2;";
+            case "격투":
+                return "background-color: #8A4C44;";
+            case "페어리":
+                return "background-color: #BF2F7B;";
+            case "드래곤":
+                return "background-color: #5C6EB4;";
+            case "고스트":
+                return "background-color: #47302E;";
+            case "에스퍼":
+                return "background-color: #B3A7DC;";
+            case "악":
+                return "background-color: #403F95;";
+
+            default:
+                return "";
+        }
+    }
+
+
+    function makeChosung(text) {
+        return Hangul.disassemble(text, true).map(function (word) {
+            return word[0];
+        }).join("");
+    }
 
 </script>
 </html>
