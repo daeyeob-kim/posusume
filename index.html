@@ -8,19 +8,30 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/hangul-js@0.2.6/hangul.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+
+    <!-- load Toast notification plugin with jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
 <style>
     body {touch-action: pan-y;}
 </style>
 <body>
 <div class="container">
-    <p style="font-weight:800;margin-top:20px;margin-bottom:0">Posusume <span id="touch_key" style="font-weight:800; font-size:8pt;">by @daeyeobi @jinhugk</span></p>
+    <p style="font-weight:800;margin-top:20px;margin-bottom:0">
+        Posusume <span style="font-weight:400; font-size:5pt;">0.0.2</span> <span id="touch_key" style="font-weight:800; font-size:8pt;">by @daeyeobi @jinhugk</span>
+
+    </p>
 
     <div id="search_input" class="row" style="margin-bottom:10px; display:none;">
         <div class="col-md-12">
             <div style="margin-top: 20px;">
+                <!-- search_target input 안 오른쪽 끝에 초기화를 위한 x모양 아이콘 추가 -->
                 <input id="search_target" type="text" class="form-control" placeholder="여기에요"
                        style="height:40px;width:100%">
+                <span id="search_target_clear" class="glyphicon glyphicon-remove-circle"
+                      style="position:absolute; right: 17px;top: 3px;color: gray;padding: 10px;"></span>
             </div>
         </div>
     </div>
@@ -607,10 +618,22 @@
         $("#search_target").keyup(function () {
             search();
         });
+
+        $("#search_target_clear").click(function () {
+            $("#search_target").val("");
+        });
+
+
     });
 
+    function copyName(formTarget) {
+
+    }
+
     function search() {
-        const searchTarget = $("#search_target").val();
+        let searchTarget = $("#search_target").val();
+        // searchTarget trim 앞 뒤 공백제거
+        searchTarget = searchTarget.replace(/(^\s*)|(\s*$)/gi, "");
 
         if (searchTarget === "") {
             return;
@@ -641,16 +664,36 @@
             if (pokemons === undefined) return;
             pokemons.forEach(function (pokemon) {
                 let formTarget = $("#result_form").clone();
-                formTarget.find(".final").html(Object.keys(pokemon)[0]);
-                formTarget.find(".grade").html(pokemon[Object.keys(pokemon)[0]].grade);
-                formTarget.find(".grade")[0].style.cssText += gradeClassText(pokemon[Object.keys(pokemon)[0]].grade)
-                formTarget.find(".type").html(pokemon[Object.keys(pokemon)[0]].type);
-                formTarget.find(".type")[0].style.cssText += typeClassText(pokemon[Object.keys(pokemon)[0]].type)
+
+                const final = Object.keys(pokemon)[0];
+                const grade = pokemon[Object.keys(pokemon)[0]].grade;
+                const type = pokemon[Object.keys(pokemon)[0]].type;
+                const target = pokemon[Object.keys(pokemon)[0]].target;
+
+                formTarget.find(".final").html(final);
+                formTarget.find(".grade").html(grade);
+                formTarget.find(".grade")[0].style.cssText += gradeClassText(grade)
+                formTarget.find(".type").html(type);
+                formTarget.find(".type")[0].style.cssText += typeClassText(type)
+                formTarget.find(".target").html(target);
                 //formTarget.find(".skills").html(pokemon[Object.keys(pokemon)[0]].skills.join(", "));
-                formTarget.find(".target").html(pokemon[Object.keys(pokemon)[0]].target);
 
                 formTarget.removeAttr("style");
                 formTarget.attr("style", "display: flex;");
+
+                const name = target;
+                // clipboard.js를 이용해서 클립보드에 복사한다.
+                const clipboard = new ClipboardJS(formTarget[0], {
+                    text: function () {
+                        return name;
+                    }
+                });
+                clipboard.on('success', function (e) {
+                    // toast with toastr.js
+                    toastr.success(name + "을(를) 복사했습니다.");
+                    e.clearSelection();
+                });
+
                 $("#result_target").append(formTarget);
             });
         });
