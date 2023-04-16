@@ -9,8 +9,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/hangul-js@0.2.6/hangul.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
-
-    <!-- load Toast notification plugin with jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
@@ -20,14 +18,12 @@
 <body>
 <div class="container">
     <p style="font-weight:800;margin-top:20px;margin-bottom:0">
-        Posusume <span style="font-weight:400; font-size:5pt;">0.0.3</span> <span id="touch_key" style="font-weight:800; font-size:8pt;">by @daeyeobi @jinhugk</span>
-
+        Posusume <span style="font-weight:400; font-size:5pt;">0.0.4</span> <span id="touch_key" style="font-weight:800; font-size:8pt;">by @daeyeobi @jinhugk</span>
     </p>
 
     <div id="search_input" class="row" style="margin-bottom:10px; display:none;">
         <div class="col-md-12">
             <div style="margin-top: 20px;">
-                <!-- search_target input 안 오른쪽 끝에 초기화를 위한 x모양 아이콘 추가 -->
                 <input id="search_target" type="text" class="form-control" placeholder="여기에요"
                        style="height:40px;width:100%">
                 <span id="search_target_clear" class="glyphicon glyphicon-remove-circle"
@@ -50,7 +46,7 @@
         </div>
         <div>
             <span class="final" style="font-size:16pt; font-weight:600;">이경용</span>
-            <span class="target" style="font-size:12pt; font-weight:400;">이경용3</span>
+            <span class="target" style="font-size:12pt; font-weight:400;">이경용</span>
             <!--<p class="skills" style="font-size:10pt; font-weight:400;">씨기관총 / 하트플랜트*</p>-->
         </div>
     </div>
@@ -64,11 +60,248 @@
 </body>
 <script>
     const imageSet = {
-        "종이신도": "",
-        "그림자나무킹": "",
-        "그림자나시": "",
-        "그림자알로라나시": ""
+        "종이신도":"",
+        "나무돌이":"",
+        "아라리":"https://data1.pokemonkorea.co.kr/newdata/pokedex/full/010201.png",
+        "우츠동":"",
+        "버섯꼬":"",
+        "이상해풀":"",
+        "자루도":"",
+        "덩쿠리":"",
+        "수풀부기":"",
+        "쉐이미스카이폼":"",
+        "채키몽":"",
+        "카푸브루루":"",
+        "도치보구":"",
+        "달무리나":"",
+        "로젤리아":"",
+        "베이리프":"",
+        "세레비":"",
+        "쉐이미랜드폼":"",
+        "눈쓰개":"",
+        "메이클":"",
+        "도치마론":"",
+        "이브이":"",
+        "영치코":"",
+        "마그케인":"",
+        "달막화":"",
+        "램프라":"",
+        "차오꿀":"",
+        "리자드":"",
+        "레시라무":"",
+        "그림자앤테이":"",
+        "그림자칠색조APEX":"",
+        "그림자파이어":"",
+        "그림자칠색조":"",
+        "델빌":"",
+        "정화칠색조APEX":"",
+        "쉘곤":"",
+        "활화르바":"",
+        "앤테이":"",
+        "파이어":"",
+        "히드런":"",
+        "볼케니온":"",
+        "원시그란돈":"",
+        "칠색조":"",
+        "리자몽":"",
+        "둔타":"",
+        "파이숭이":"",
+        "늪짱이":"",
+        "엘리게이":"",
+        "잉어킹":"",
+        "크랩":"",
+        "샤프니아":"",
+        "어니부기":"",
+        "완철포":"",
+        "누겔레온":"",
+        "가재군":"",
+        "가이오가":"",
+        "쌍검자비":"",
+        "팽도리":"",
+        "야돈":"",
+        "마나피":"",
+        "키요공":"",
+        "전수목":"",
+        "에레브":"",
+        "럭시오":"",
+        "볼트로스영물폼":"",
+        "그림자라이코":"",
+        "썬더라이":"",
+        "그림자썬더":"",
+        "제크로무":"",
+        "레어코일":"",
+        "보송송":"",
+        "라이코":"",
+        "그림자뮤츠":"",
+        "썬더":"",
+        "카푸꼬꼬꼭":"",
+        "전지충이":"",
+        "포푸니":"",
+        "메꾸리":"",
+        "눈꼬마":"",
+        "큐레무":"",
+        "뮤츠":"",
+        "원시가이오가":"",
+        "그림자프리져":"",
+        "그림자레지아이스":"",
+        "꽁어름":"",
+        "씨레오":"",
+        "페로코체":"",
+        "쪼마리":"",
+        "메가헤라크로스":"",
+        "메가쁘사이저":"",
+        "스라크":"",
+        "딱충이":"",
+        "게노세크트":"",
+        "왕자리":"",
+        "태우지네":"",
+        "누니머기":"",
+        "딱정곤":"",
+        "쁘사이저":"",
+        "꼬시레":"",
+        "헤라크로스":"",
+        "아이앤트":"",
+        "두르쿤":"",
+        "휠구":"",
+        "니로우":"",
+        "메가레쿠쟈":"",
+        "피죤":"",
+        "그림자루기아APEX":"",
+        "레쿠쟈":"",
+        "이벨타르":"",
+        "찌르버드":"",
+        "수리둥보":"",
+        "가라르파이어":"",
+        "유토브":"",
+        "토네로스화신폼":"",
+        "토네로스영물폼":"",
+        "골비람":"",
+        "비브라바":"",
+        "한바이트":"",
+        "그란돈":"",
+        "랜드로스영물폼":"",
+        "코뿌리":"",
+        "랜드로스화신폼":"",
+        "두더류":"",
+        "코코리":"",
+        "데구리":"",
+        "두개노스":"",
+        "메가디안시":"",
+        "데기라스":"",
+        "메가프테라":"",
+        "테라키온":"",
+        "티고라스":"",
+        "암트르":"",
+        "갱도라":"",
+        "돌헨진":"",
+        "아마루스":"",
+        "메탕구":"",
+        "자시안검왕":"",
+        "디아루가":"",
+        "멜탄":"",
+        "자마젠타방패왕":"",
+        "리오르":"",
+        "케르디오":"",
+        "근육몬":"",
+        "윤겔라":"",
+        "마크탕":"",
+        "메가엘레이드":"",
+        "치고마":"",
+        "이어롤":"",
+        "토쇠골":"",
+        "블루":"",
+        "킬리아":"",
+        "토게틱":"",
+        "손지브림":"",
+        "마빌크":"",
+        "블랙큐레무":"",
+        "메가라티오스":"",
+        "신뇽":"",
+        "메가라티아스":"",
+        "그림자라티오스":"",
+        "화이트큐레무":"",
+        "펄기아":"",
+        "보만다":"",
+        "그림자라티아스":"",
+        "드래런치":"",
+        "액슨도":"",
+        "메가리자몽X":"",
+        "라티오스":"",
+        "고우스트":"",
+        "어둠대신":"",
+        "코산호":"",
+        "데인차":"",
+        "타타륜":"",
+        "무우마":"",
+        "흔들풍손":"",
+        "기라티나오리진폼":"",
+        "모으령":"",
+        "다크라이":"",
+        "굴레에빠진후파":"",
+        "굴레를벗어난후파":"",
+        "기라티나어나더폼":"",
+        "코스모움":"",
+        "나목령":"",
+        "메가뮤츠Y":"",
+        "메가뮤츠X":"",
+        "버드렉스흑마":"",
+        "버드렉스백마":"",
+        "나무지기":"",
+        "모다피":"",
+        "이상해씨":"",
+        "모부기":"",
+        "흥나숭":"",
+        "달콤아":"",
+        "꼬몽울":"",
+        "치코리타":"",
+        "아차모":"",
+        "브케인":"",
+        "불켜미":"",
+        "뚜꾸리":"",
+        "파이리":"",
+        "아공이":"",
+        "불꽃숭이":"",
+        "물짱이":"",
+        "리아코":"",
+        "꼬부기":"",
+        "울머기":"",
+        "수댕이":"",
+        "팽태자":"",
+        "누리공":"",
+        "에레키드":"",
+        "꼬링크":"",
+        "코일":"",
+        "메리프":"",
+        "턱지충이":"",
+        "꾸꾸리":"",
+        "대굴레오":"",
+        "뿔충이":"",
+        "두르보":"",
+        "마디네":"",
+        "구구":"",
+        "찌르꼬":"",
+        "콩둘기":"",
+        "톱치":"",
+        "딥상어동":"",
+        "뿔카노":"",
+        "꼬마돌":"",
+        "애버라스":"",
+        "단굴":"",
+        "가보리":"",
+        "메탕":"",
+        "알통몬":"",
+        "캐이시":"",
+        "으랏차":"",
+        "랄토스":"",
+        "토게피":"",
+        "몸지브림":"",
+        "미뇽":"",
+        "드라꼰":"",
+        "터검니":"",
+        "고오스":"",
+        "코스모그":""
     }
+
 
     const finalForm = [
         //풀
@@ -119,7 +352,7 @@
         {"그림자파이어": {"type": "불", "grade": "S+", "using": "레이드"}},
         {"그림자칠색조": {"type": "불", "grade": "S+", "using": "레이드"}},
         {"메가헬가": {"type": "불", "grade": "S+", "using": "레이드"}},
-        {"정화칠색APEX": {"type": "불", "grade": "S", "using": "레이드"}},
+        {"정화칠색조APEX": {"type": "불", "grade": "S", "using": "레이드"}},
         {"메가보만다": {"type": "불", "grade": "S", "using": "레이드"}},
         {"불카모스": {"type": "불", "grade": "S", "using": "레이드"}},
         {"앤테이": {"type": "불", "grade": "S", "using": "레이드"}},
@@ -747,17 +980,6 @@
     ;
 
     $(document).ready(function () {
-        // by @daeyeobi @jinhugk를 5번 연속해서 클릭하면 search_input이 보이게 하고, search_target에 포커스를 준다.
-        let touchCount = 0;
-        $("#touch_key").click(function () {
-            touchCount++;
-            if (touchCount === 5) {
-                $("#search_input").show();
-                $("#search_target").focus();
-                touchCount = 0;
-            }
-        });
-
         $("#search_target").keyup(function () {
             search();
         });
@@ -766,13 +988,7 @@
             $("#search_target").val("");
             $("#search_target").focus();
         });
-
-
     });
-
-    function copyName(formTarget) {
-
-    }
 
     function search() {
         let searchTarget = $("#search_target").val();
@@ -815,6 +1031,8 @@
                 const target = pokemon[Object.keys(pokemon)[0]].target;
                 const using = pokemon[Object.keys(pokemon)[0]].using;
 
+                const image = imageSet[target]
+
                 formTarget.find(".final").html(final);
                 formTarget.find(".grade").html(grade);
                 formTarget.find(".grade")[0].style.cssText += gradeClassText(grade)
@@ -825,11 +1043,16 @@
                 formTarget.find(".using")[0].style.cssText += usingClassText(type)
                 //formTarget.find(".skills").html(pokemon[Object.keys(pokemon)[0]].skills.join(", "));
 
+                if (image != "") {
+                    formTarget.find(".image").attr("src", image);
+                } else {
+                    formTarget.find(".image").attr("src", "https://stickershop.line-scdn.net/stickershop/v1/product/18938/LINEStorePC/main.png");
+                }
+
                 formTarget.removeAttr("style");
                 formTarget.attr("style", "display: flex;");
 
                 const name = target;
-                // clipboard.js를 이용해서 클립보드에 복사한다.
                 const clipboard = new ClipboardJS(formTarget[0], {
                     text: function () {
                         return name;
