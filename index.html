@@ -2,7 +2,7 @@
 <head>
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
     <meta charSet="utf-8">
-    <title>포켓몬Go 추천 포켓몬 검색기</title>
+    <title>포켓몬GO 추천 포켓몬 검색기</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -14,6 +14,10 @@
 </head>
 <style>
     body {touch-action: pan-y;}
+    .btn.focus {
+        outline: none;
+        box-shadow: none;
+    }
 </style>
 <body>
 <div class="container">
@@ -21,9 +25,10 @@
         Posusume <span style="font-weight:400; font-size:5pt;">0.0.4</span> <span id="touch_key" style="font-weight:800; font-size:8pt;">by @daeyeobi @jinhugk</span>
     </p>
 
-    <div id="search_input" class="row" style="margin-bottom:10px;">
+
+    <div id="search_input" class="row" style="margin-bottom:10px;margin-top:10px;">
         <div class="col-md-12">
-            <div style="margin-top: 20px;">
+            <div>
                 <input id="search_target" type="text" class="form-control" placeholder="여기에요"
                        style="height:40px;width:100%">
                 <span id="search_target_clear" class="glyphicon glyphicon-remove-circle"
@@ -31,14 +36,26 @@
             </div>
         </div>
     </div>
+    <div>
+        <!--checkbox button groups for search with raid and gbl button is radius 0.5rem design is flat-->
+        <div class="btn-group" role="group" data-toggle="buttons">
+            <label class="btn btn-primary active" style="margin-right:4px; font-size:8pt; border-radius:8px;">
+                <input type="checkbox" class="using_type_btn" name="using_raid" autocomplete="off" checked> 레이드
+            </label>
+            <label class="btn btn-primary active" style="font-size:8pt; border-radius:8px;">
+                <input type="checkbox" class="using_type_btn" name="using_gbl" autocomplete="off" checked> GBL
+            </label>
+        </div>
+    </div>
     <div id="result_target">
+        <div style="height:10px;"></div>
         <span style="color:gray">* 이름 일부검색, 초성 일부검색 가능 (혼합불가)</span>
     </div>
 </div>
 
 <!-- 폼 예시 -->
-<div id="result_form" style="padding:20px; display:none;">
-    <div id="left_div" style="text-align:left;flex-grow: 1;">
+<div id="result_form_for_raid" style="padding:20px; display:none;">
+    <div style="text-align:left;flex-grow: 1;">
         <div style="margin-top: 10px;">
             <p class="using badge badge-pill" style="font-size:10pt">레이드</p>
             <p class="type badge badge-pill" style="font-size:10pt">불 타입</p>
@@ -47,10 +64,31 @@
         <div>
             <span class="final" style="font-size:16pt; font-weight:600;">이경용</span>
             <span class="target" style="font-size:12pt; font-weight:400;">이경용</span>
-            <!--<p class="skills" style="font-size:10pt; font-weight:400;">씨기관총 / 하트플랜트*</p>-->
         </div>
     </div>
-    <div id="right_div" style="text-align:right;">
+    <div style="text-align:right;">
+        <img class="image"
+             src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png"
+             style="width:70px; height:70px;">
+    </div>
+    <hr>
+</div>
+<div id="result_form_for_gbl" style="padding:20px; display:none;">
+    <div style="text-align:left;flex-grow: 1;">
+        <div style="margin-top: 10px;">
+            <p class="using badge badge-pill" style="font-size:10pt">레이드</p>
+            <p class="grade badge badge-primary" style="">A</p>
+        </div>
+        <div>
+            <span class="final" style="font-size:16pt; font-weight:600;">이경용</span>
+            <span class="target" style="font-size:12pt; font-weight:400;">이경용</span>
+            <div>
+                <span class="skill_normal" style="font-size:10pt; font-weight:400;">지진</span>
+                <span class="skill_special" style="font-size:10pt; font-weight:400;">씨기관총 / 하트플랜트*</span>
+            </div>
+        </div>
+    </div>
+    <div style="text-align:right;">
         <img class="image"
              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png"
              style="width:70px; height:70px;">
@@ -650,10 +688,41 @@
         {"오롱털": {"type": "악", "grade": "A~A+", "using": "레이드"}},
         {"그림자알로라질뻐기": {"type": "악", "grade": "A~A+", "using": "레이드"}},
         {"헬가": {"type": "악", "grade": "A~A+", "using": "레이드"}},
-        {"절각참": {"type": "악", "grade": "A~A+", "using": "레이드"}}
+        {"절각참": {"type": "악", "grade": "A~A+", "using": "레이드"}},
+        // GBL 슈퍼리그
+        {"레지스틸": {"grade": "S~S+", "skill_normal": "록온", "skill_special": "전자포*/기합구슬", "using": "GBL 슈퍼리그"}},
+        {"가라르메더": {"grade": "S~S+", "skill_normal": "머드샷", "skill_special": "스톤샤워/지진", "using": "GBL 슈퍼리그"}},
+        {"곤율거니": {"grade": "S~S+", "skill_normal": "카운터", "skill_special": "그로우펀치/속임수", "using": "GBL 슈퍼리그"}},
+        {"요가램": {"grade": "S~S+", "skill_normal": "카운터", "skill_special": "사이코키네시스/냉동펀치", "using": "GBL 슈퍼리그"}},
+        {"그림자대짱이": {"grade": "S~S+", "skill_normal": "머드샷", "skill_special": "하이드로캐논*/지진", "using": "GBL 슈퍼리그"}},
+        {"대짱이": {"grade": "S~S+", "skill_normal": "머드샷", "skill_special": "하이드로캐논*/지진", "using": "GBL 슈퍼리그"}},
+        {"대로트": {"grade": "S~S+", "skill_normal": "섀도클로", "skill_special": "씨폭탄/섀도볼", "using": "GBL 슈퍼리그"}},
+        {"바리톱스": {"grade": "S~S+", "skill_normal": "떨어뜨리기", "skill_special": "사이코키네시스/냉동펀치", "using": "GBL 슈퍼리그"}},
+        {"패리퍼": {"grade": "S~S+", "skill_normal": "날개치기", "skill_special": "하이드로캐논*/지진", "using": "GBL 슈퍼리그"}},
+        {"야부엉": {"grade": "S~S+", "skill_normal": "날개치기", "skill_special": "씨폭탄/섀도볼", "using": "GBL 슈퍼리그"}},
+        {"파비코리": {"grade": "S~S+", "skill_normal": "용의숨결", "skill_special": "문포스*/불새", "using": "GBL 슈퍼리그"}},
+        {"그림자글라이온": {"grade": "S~S+", "skill_normal": "날개치기", "skill_special": "깜짝베기/지진", "using": "GBL 슈퍼리그"}},
+        {"글라이온": {"grade": "S~S+", "skill_normal": "날개치기", "skill_special": "깜짝베기/지진", "using": "GBL 슈퍼리그"}},
+        {"내루미": {"grade": "S~S+", "skill_normal": "핥기", "skill_special": "누르기*/파워휩", "using": "GBL 슈퍼리그", "etc":"XL"}},
+        {"랜턴": {"grade": "S~S+", "skill_normal": "스파크", "skill_special": "파도타기/10만볼트", "using": "GBL 슈퍼리그"}},
+        {"피죤투": {"grade": "S~S+", "skill_normal": "날개치기*", "skill_special": "브레이브버드/깃털댄스", "using": "GBL 슈퍼리그"}},
+        {"정화깜까미": {"grade": "S~S+", "skill_normal": "섀도클로", "skill_special": "은혜갚기/속임수", "using": "GBL 슈퍼리그", "etc":"XL"}},
+        {"배우르": {"grade": "S~S+", "skill_normal": "두번차기", "skill_special": "누르기/보복", "using": "GBL 슈퍼리그"}},
+        {"그림자괴력몬": {"grade": "S~S+", "skill_normal": "카운터", "skill_special": "크로스촙/스톤샤워", "using": "GBL 슈퍼리그"}},
+        {"버랜지나": {"grade": "S~S+", "skill_normal": "바크아웃", "skill_special": "제비반환/속임수", "using": "GBL 슈퍼리그"}},
+        {"만타인": {"grade": "S~S+", "skill_normal": "날개치기", "skill_special": "거품광선/냉동빔", "using": "GBL 슈퍼리그"}},
+        {"메깅": {"grade": "S~S+", "skill_normal": "머드샷", "skill_special": "진흙폭탄/눈보라", "using": "GBL 슈퍼리그"}},
+        {"블래키": {"grade": "S~S+", "skill_normal": "바크아웃", "skill_special": "비장의무기*/속임수", "using": "GBL 슈퍼리그"}},
+        {"파르토": {"grade": "S~S+", "skill_normal": "머드샷", "skill_special": "불꽃펀치/지진", "using": "GBL 슈퍼리그", "etc":"XL"}},
+        {"악식킹": {"grade": "S~S+", "skill_normal": "드래곤테일", "skill_special": "깨물어부수기/드래곤클로", "using": "GBL 슈퍼리그"}},
+        {"레지락": {"grade": "S~S+", "skill_normal": "록온", "skill_special": "스톤에지/기합구슬", "using": "GBL 슈퍼리그"}},
+        {"발바로": {"grade": "S~S+", "skill_normal": "카운터", "skill_special": "땅고르기/누르기", "using": "GBL 슈퍼리그"}},
+        {"그림자알로라나인테일": {"grade": "S~S+", "skill_normal": "눈싸라기", "skill_special": "매지컬샤인/웨더볼", "using": "GBL 슈퍼리그"}},
+        {"알로라나인테일": {"grade": "S~S+", "skill_normal": "눈싸라기", "skill_special": "매지컬샤인/웨더볼", "using": "GBL 슈퍼리그"}},
+        {"정화마자용": {"grade": "S~S+", "skill_normal": "카운터", "skill_special": "은혜갚기/미러코트", "using": "GBL 슈퍼리그", "etc":"XL"}}
     ];
 
-    const pokemonList = [
+    const pokemonListOrigin = [
             {"종이신도": "종이신도"},
             {"나무돌이": "그림자나무킹"},
             {"아라리": "그림자나시"},
@@ -975,7 +1044,64 @@
             {"고오스": "메가팬텀"},
             {"어둠대신": "루나아라"},
             {"코스모그": "루나아라"},
-            {"랄토스": "그림자엘레이드"}
+            {"랄토스": "그림자엘레이드"},
+        // GBL 슈퍼리그
+            {"레지스틸": "레지스틸"},
+            {"메더": "가라르메더"},
+            {"곤율거니": "곤율거니"},
+            {"곤율랭": "곤율거니"},
+            {"요가램": "요가램"},
+            {"대짱이": "그림자대짱이"},
+            {"늪짱이": "그림자대짱이"},
+            {"물짱이": "그림자대짱이"},
+            {"대짱이": "대짱이"},
+            {"늪짱이": "대짱이"},
+            {"물짱이": "대짱이"},
+            {"대로트": "대로트"},
+            {"나목령": "대로트"},
+            {"바리톱스": "바리톱스"},
+            {"방패톱스": "바리톱스"},
+            {"패리퍼": "패리퍼"},
+            {"갈모매": "패리퍼"},
+            {"야부엉": "야부엉"},
+            {"부우부": "야부엉"},
+            {"파비코리": "파비코리"},
+            {"파비코": "파비코리"},
+            {"글라이온": "그림자글라이온"},
+            {"글라이거": "그림자글라이온"},
+            {"글라이온": "글라이온"},
+            {"글라이거": "글라이온"},
+            {"내루미": "내루미"},
+            {"랜턴": "랜턴"},
+            {"초라기": "랜턴"},
+            {"피죤투": "피죤투"},
+            {"피죤": "피죤투"},
+            {"깜까미": "정화깜까미"},
+            {"배우르": "배우르"},
+            {"우르": "배우르"},
+            {"괴력몬": "그림자괴력몬"},
+            {"근육몬": "그림자괴력몬"},
+            {"알통몬": "그림자괴력몬"},
+            {"버랜지나": "버랜지나"},
+            {"벌차이": "버랜지나"},
+            {"만타인": "만타인"},
+            {"타만타": "만타인"},
+            {"메깅": "메깅"},
+            {"미꾸리": "메깅"},
+            {"블래키": "블래키"},
+            {"이브이": "블래키"},
+            {"파르토": "파르토"},
+            {"파르빗": "파르토"},
+            {"악식킹": "악식킹"},
+            {"레지락": "레지락"},
+            {"발바로": "발바로"},
+            {"게을로": "발바로"},
+            {"나인테일": "그림자알로라나인테일"},
+            {"식스테일": "그림자알로라나인테일"},
+            {"나인테일": "알로라나인테일"},
+            {"식스테일": "알로라나인테일"},
+            {"마자용": "정화마자용"},
+            {"마자": "정화마자용"}
         ]
     ;
 
@@ -988,6 +1114,10 @@
             $("#search_target").val("");
             $("#search_target").focus();
         });
+
+        $(".using_type_btn").change(function() {
+            search();
+        });
     });
 
     function search() {
@@ -999,6 +1129,8 @@
             return;
         }
         $("#result_target").html("");
+        // pokemonList List의 데이터 중복제거
+        const pokemonList = Array.from(new Set(pokemonListOrigin.map(JSON.stringify))).map(JSON.parse);
         const result = pokemonList.filter(function (pokemon) {
             return Object.keys(pokemon).some(function (key) {
                 return (key.indexOf(searchTarget) !== -1 || makeChosung(key).indexOf(searchTarget) !== -1);
@@ -1006,7 +1138,7 @@
         });
 
         if (result.length === 0) {
-            $("#result_target").html("검색 결과가 없습니다.");
+            $("#result_target").html("<div style='margin-top: 10px;text-align: center;'><img src='https://stickershop.line-scdn.net/stickershop/v1/product/18938/LINEStorePC/main.png'><p style='margin-top: 20px;'>검색 결과가 없습니다.</p></div>");
             return;
         }
 
@@ -1022,26 +1154,46 @@
 
         finalResult.forEach(function (pokemons) {
             if (pokemons === undefined) return;
-            pokemons.forEach(function (pokemon) {
-                let formTarget = $("#result_form").clone();
+            for (let pokemon of pokemons) {
+                let formTarget = null;
 
                 const final = Object.keys(pokemon)[0];
                 const grade = pokemon[Object.keys(pokemon)[0]].grade;
                 const type = pokemon[Object.keys(pokemon)[0]].type;
                 const target = pokemon[Object.keys(pokemon)[0]].target;
                 const using = pokemon[Object.keys(pokemon)[0]].using;
+                const skill_normal = pokemon[Object.keys(pokemon)[0]].skill_normal;
+                const skill_special = pokemon[Object.keys(pokemon)[0]].skill_special;
 
+
+                console.log("using_raid", $('input[name="using_raid"]').is(":checked"))
+                console.log("using_gbl", $('input[name="using_gbl"]').is(":checked"))
                 const image = imageSet[target]
+
+                if (using == "레이드") {
+                    if (! $('input[name="using_raid"]').is(":checked")) return
+                    formTarget = $("#result_form_for_raid").clone();
+                } else {
+                    if (! $('input[name="using_gbl"]').is(":checked")) return
+                    formTarget = $("#result_form_for_gbl").clone();
+                }
+
 
                 formTarget.find(".final").html(final);
                 formTarget.find(".grade").html(grade);
-                formTarget.find(".grade")[0].style.cssText += gradeClassText(grade)
-                formTarget.find(".type").html(type);
-                formTarget.find(".type")[0].style.cssText += typeClassText(type)
+                formTarget.find(".grade")[0].style.cssText += gradeClassText(grade);
                 formTarget.find(".target").html(target);
                 formTarget.find(".using").html(using);
-                formTarget.find(".using")[0].style.cssText += usingClassText(type)
-                //formTarget.find(".skills").html(pokemon[Object.keys(pokemon)[0]].skills.join(", "));
+                formTarget.find(".using")[0].style.cssText += usingClassText(type);
+
+                if (using == "레이드") {
+                    formTarget.find(".type").html(type);
+                    formTarget.find(".type")[0].style.cssText += typeClassText(type);
+                } else {
+                    formTarget.find(".skill_normal").html(skill_normal);
+                    formTarget.find(".skill_special").html(skill_special);
+                }
+
 
                 if (image != "") {
                     formTarget.find(".image").attr("src", image);
@@ -1065,7 +1217,7 @@
                 });
 
                 $("#result_target").append(formTarget);
-            });
+            };
         });
 
     }
